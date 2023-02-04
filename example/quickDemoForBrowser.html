@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type="module">
+        import { Octokit } from "https://cdn.skypack.dev/@octokit/rest";
+        import {
+            auth, 
+            loadData,
+            // getDataById,
+            // storeDataInHTML,
+            // getDataFromHTML,
+            // deleteDataById,
+            // restoreDataById,
+            // isDataExist,
+            // resetTokenInBrowser
+        } from "https://cdn.skypack.dev/@codingnninja/sapabase";
+/* Public authentication and loading of data */
+        auth({
+            username: 'codingnninja',
+            reponame: 'bloguard',
+            folder: 'user',
+            Octokit,
+        });
+        
+        const myData = await loadData()
+        console.log(myData)
+    </script>
+</body>
+</html>
