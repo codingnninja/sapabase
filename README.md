@@ -165,7 +165,7 @@ Make sure the `data` folder is a child of the root directory. Also, any folder y
 }
 ```
 
-Note: If you're confused to add these files properly, check this example: [data folder and its subfolder](https://github.com/codingnninja/sapabase/data). Don't forget, data and any subfolder within it must contain those files for sapabase to work as expected.
+Note: If you're confused to add these files properly, check this example: [data folder and its subfolder](https://github.com/codingnninja/sapabase/tree/main/data). Don't forget, data and any subfolder within it must contain those files for sapabase to work as expected.
 ## GitHub Token
 
 To use this package, you must have a GitHub account. Then, create your GitHub token [Here](https://github.com/settings/tokens)
