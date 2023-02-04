@@ -1,6 +1,6 @@
 {
   "name": "@codingnninja/sapabase",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Create \"Serverless Database\" with JavaScript and Github for projects that need simple data.",
   "main": "dist/cjs/bundle.cjs",
   "module": "dist/esm/bundle.js",

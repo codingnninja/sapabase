@@ -90,7 +90,7 @@ Import Octokit and sapabase by adding the script below to your webpage.
     <script type="module">
 
        import { Octokit } from "https://cdn.skypack.dev/@octokit/rest";
-       import sapabase from "https://cdn.skypack.dev/@codingnninja/sapabase";
+       import {auth, loadData} from "https://cdn.skypack.dev/@codingnninja/sapabase";
     </script>
   </body>
 </html>
@@ -112,7 +112,7 @@ Here is the code in the src/index.js:
 
 ```js
 import { Octokit } from "https://cdn.skypack.dev/@octokit/rest";
-import sapabase from "https://cdn.skypack.dev/@codingnninja/sapabase";
+import {auth, loadData} from "https://cdn.skypack.dev/@codingnninja/sapabase";
 ```
 
 #### Quick demo
@@ -165,7 +165,7 @@ Make sure the `data` folder is a child of the root directory. Also, any folder y
 }
 ```
 
-Note: If you're confused to add these files properly, check this example: [data folder and its subfolder](https://github.com/codingnninja/sapabase/tree/main/data). Don't forget, data and any subfolder within it must contain those files for sapabase to work as expected.
+Note: If you're confused to add these files properly, check this example: [data folder and its subfolder](/data). Don't forget, data and any subfolder within it must contain those files for sapabase to work as expected.
 ## GitHub Token
 
 To use this package, you must have a GitHub account. Then, create your GitHub token [Here](https://github.com/settings/tokens)
@@ -269,7 +269,7 @@ console.log(students)
 
 ### createOrUpdateData()
 
-It stores or updates data in the your sapabase "Serverless Database" and returns the data inserted. It takes `data` and `folder (optional)` as arguments.
+It stores or updates data in the sapabase "Serverless Database" and returns the data inserted. It takes `data` and `folder (optional)` as arguments.
 
 #### When folder in `auth()` is set to 'users'
 
@@ -441,4 +441,4 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 ## License
 
-[MIT License](https://andreasonny.mit-license.org/2019) © Andrea SonnY
+[MIT License](https://andreasonny.mit-license.org/2019) © Ayobami Ogundiran
