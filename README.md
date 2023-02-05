@@ -388,7 +388,7 @@ resetTokenInBrowser();
 ```
 ### startPrivateAuth() && endPrivateAuth()
 
-They initiate authentication in the browser. 
+They initiate authentication in the browser.
 
 ```js
 const addOrUpdate = (data) => {

@@ -41,7 +41,8 @@ const auth = (options) => {
     }
 
     if(isBrowser() && options.status === 'private' && !options.token && !inBrowserToken) {
-        const token = prompt('Enter Github Auth Token:', 'Auth Token');
+        const token = prompt('Enter Github Auth Token:');
+        if(!token) return;
         localStorage.setItem('sapatoken', token);
         inBrowserToken = token;
     }
@@ -58,7 +59,7 @@ const resetTokenInBrowser = (_) => {
         throw('This function can only be used in the browser')
     }
 
-    if(!localStorage.removeItem('sapatoken', '')){
+    if(!localStorage.removeItem('sapatoken')){
         return false;
     }
     return true;
