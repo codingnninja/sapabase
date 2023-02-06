@@ -29,7 +29,7 @@ const isBrowser = (_) => {
 const auth = (options) => {
     let inBrowserToken;
     if(!isObject(options)) {
-        throw (`An object is expected but you supplied ${getType(options)}`)
+        throw new TypeError(`An object is expected but you supplied ${getType(options)}`)
     }
 
     if(isBrowser()) {
