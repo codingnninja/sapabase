@@ -1,8 +1,4 @@
-var {
-    auth, 
-    startPrivateAuth, 
-    endPrivateAuth} = require('@codingnninja/sapabase');
-
+var {auth} = require('@codingnninja/sapabase');
 var expect = require('chai').expect;
 var {Octokit} = require('@octokit/rest');
 
