@@ -183,10 +183,16 @@ const storeDataInHTML = (data) => {
 }
 
 const getDataFromHTML = () => {
+
+    if(!isBrowser()) {
+        throw ('This function is only for the browser');
+    }
+
    return window.__data;
 }
 
 const createOrUpdateData = async (userData, folder = __options.folder) => {
+   //TODO: check if folder path is a string.
     if(!isObject(userData)) {
         throw (`An object is expected but you supplied ${getType(userData)}`)
     }

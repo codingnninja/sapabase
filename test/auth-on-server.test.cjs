@@ -1,4 +1,6 @@
-var {auth} = require('@codingnninja/sapabase');
+var {auth, 
+    startPrivateAuth, 
+    endPrivateAuth} = require('@codingnninja/sapabase');
 var expect = require('chai').expect;
 var {Octokit} = require('@octokit/rest');
 
@@ -54,6 +56,20 @@ describe('authentication for user to connect with Github in Node', function() {
             expect(function(){
                 auth(() => {return 'a'} )
             }).to.throw(TypeError, "An object is expected but you supplied Function");
+        })
+    })
+
+    context('authenticate with startPrivateAuth & endPrivateAuth in node', function() {
+        it('should throw an error', function() {
+            expect(function(){
+                startPrivateAuth()
+            }).to.throw("This function can only be used in the browser");
+        })
+
+        it('should throw an error', function() {
+            expect(function(){
+                endPrivateAuth()
+            }).to.throw("This function can only be used in the browser");
         })
     })
 })
