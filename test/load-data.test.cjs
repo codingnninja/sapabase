@@ -14,8 +14,9 @@ describe('Loading data from a Github repo', function() {
                 Octokit
             })  
             const actual = await loadData();
-            // const expected = await loadData(1);       
+            const expected = await loadData(1);       
             expect(actual).to.be.an('array');
+            expect(actual.length).to.equal(expected.length);
         })
     })
 

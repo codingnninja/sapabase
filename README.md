@@ -150,14 +150,14 @@ Make sure the `data` folder is a child of the root directory. Also, any folder y
   {"index":0}
 ```
 
-2. folderName_0.json (e.g article_0.json)
+3. folderName_0.json (e.g article_0.json)
 
 ```json
 {
     "data": []
 }
 ```
-3. searchIndeces_0.json
+4. searchIndeces_0.json
 
 ```json
 {
@@ -169,7 +169,10 @@ Note: If you're confused to add these files properly, check this example: [data 
 ## GitHub Token
 
 To use this package, you must have a GitHub account. Then, create your GitHub token [Here](https://github.com/settings/tokens)
+
 ## API
+
+Sapabase APIs can be use in the browser and on the server.
 ### auth()
 `auth()` authenticates users to use sapabase and it takes `option` as an argument. Option has six properties: `github-username`, `repository-name`, `folder`, `Octokit-instance`, `status` and `github-auth-token`.
 
@@ -224,6 +227,7 @@ auth(option);
 We recommend you get your token from .env file using `process.env` .
 
 Note: You don't need `startPrivateAuth()` and  `endPrivateAuth()` on the server. They're only used to authenticate in the browser.
+
 ### loadData()
 
 `loadData()` gets data from the folder you set in `auth()` by default. 
