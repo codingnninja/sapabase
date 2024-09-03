@@ -6,7 +6,9 @@ let __options = {
     folder: '',
     indexDB: null,
     searchIndeces: null,
-    control: false
+    control: false,
+    page: 0,
+    pageJump: false
 }
 
 const isBrowser = (_) => {
@@ -100,7 +102,10 @@ const createCommit = async (options, data) => {
         })
         return request;
     } catch (err) {
-        throw (`An error occurred and here is the info: ${err}`);
+        return {
+            status: 'failed',
+            error: err
+        }
     }
 }
 
@@ -113,7 +118,10 @@ const getFile = async (options, filePath) => {
             return request.data;
 
     } catch (err) {
-        throw (`An error occurred and here is the info: ${err}`);
+        return {
+            status: 'failed',
+            error: err
+        }    
     }
 }
 
@@ -134,25 +142,40 @@ const Base64 = {
 
 const loadData = async (counter = 1, folder = __options.folder) => {
     if(!isPositiveInteger(counter)) {
-        throw (`A whole number like 1, 2, 3 is expected but you supplied something else like 0, -2, text, array or object`)
+        throw (`A whole number like 1, 2, 3 is expected but you supplied something else like 0, -2, text, array or object`);
     }
     //We only allow integers (number starting from 1) from users and we convert it back to index (number starting from zero).
-    let pagination = counter - 1;
+
+    let pagination = __options.pageJump ? counter : counter - 1;
+    
+    if(__options.page === counter) {
+        pagination -= 1;
+    } 
+    // __options.page = __options.pageJump ? counter : counter - 1; 
     const currentCountData = await getFilePaginationCount(folder);
     const fileIndex = currentCountData.fileCounter;
     //when no page index is provided, get the latest file index.
-    const currentFileIndex = Math.sign(fileIndex - pagination) === 1
+    // const currentFileIndex = fileIndex >= __options.page 
+    //         ? fileIndex - __options.page 
+    //         : null;
+    const currentFileIndex = fileIndex >= pagination 
             ? fileIndex - pagination 
-            : pagination - fileIndex;
-    
+            : null;
     const latestData = await getJsonDataFromFile(currentFileIndex, folder);
+    __options.page = currentFileIndex ? counter : counter - 1; 
+    console.log(__options.page, counter);  
     let previousData;
     
     if(latestData.length === 0 && fileIndex === 0){
         return latestData;
     }
-    //When the data in the latest file is less or equal to 7, we merge it with the previous data to make sure the items on the current page is not 1 or <= 7. This is necessary because we have divided json files and doing this helps us sync the data in the latest file to the previous one when it contains items less than 7.
+    //When the data in the latest file is less or equal to 7, 
+    //we merge it with the previous data to make sure the 
+    //items on the current page is not 1 or <= 7. 
+    //This is necessary because we have divided json files 
+    //and doing this helps us sync the data in the latest file to the previous one when it contains items less than 7.
     if( fileIndex > pagination && latestData.length <= 7) {
+        __options.pageJump = true;
         previousData = await getJsonDataFromFile(currentFileIndex - 1, folder);
         return[...latestData, ...previousData];
     }
@@ -164,6 +187,11 @@ const getJsonDataFromFile = async (currentFileIndex, folder) => {
     const currentFilePath = makeDataFilePath(folder, currentFileIndex);
     
     const data = await getFile(__options, currentFilePath);
+    
+    if(data.status === 'failed') {
+        return data;
+    }
+
     const content = JSON.parse(Base64.decode(data.content));
 
     const availableData = content.data.filter(datum => datum.deleted !== true)
@@ -191,6 +219,27 @@ const getDataFromHTML = () => {
    return window.__data;
 }
 
+const normalizeDatabase = async (folder = __options.folder, file) => {
+  const nextFile = await getDataFromFile(folder, file.index + 1);
+  if(nextFile.status === 'failed'){
+    console.log('working')
+    return false;
+  }
+  const currentCountData = await getFilePaginationCount(folder);
+  const updatedCounter = await updateFilePaginationCount(folder, currentCountData)
+
+  if(updatedCounter.status === 'failed') {
+    console.log('working')
+    return false;
+  }
+
+  __options.control = true;
+        const restructuredData = shorthenValuesOfObjectProperties(file.content[0]);
+        restructuredData.fileIndex = updatedCounter;
+        await __createOrUpdateData(folder, restructuredData)
+  __options.control = false;
+}
+
 const createOrUpdateData = async (userData, folder = __options.folder) => {
    //TODO: check if folder path is a string.
     if(!isObject(userData)) {
@@ -211,6 +260,8 @@ const createOrUpdateData = async (userData, folder = __options.folder) => {
 const __createOrUpdateData = async (folder = __options.folder, userData) => {
 
    const file = await getDataFromFile(folder);
+   await normalizeDatabase(folder, file);
+   
    const isContentFull = hasReachedMaxDataLength(file.content);
    userData.fileIndex = file.index;
 
@@ -226,10 +277,18 @@ const __createOrUpdateData = async (folder = __options.folder, userData) => {
         content: JSON.stringify( { data:allData } ),
         sha: isContentFull ? '' : file.sha
     });
-    
-   if(  createdCommit.status === 201 && isContentFull ){
+
+    if(createdCommit.status === 'failed') {
+        return createdCommit;
+    }
+
+    if(  createdCommit.status === 201 && isContentFull ){
         const currentCountData = await getFilePaginationCount(folder);
-        updateFilePaginationCount(folder, currentCountData);
+        const updatedCounter = await updateFilePaginationCount(folder, currentCountData);
+
+        if(updatedCounter.status !== 201){
+            await updateFilePaginationCount(folder, file.counter);
+        }
         
         __options.control = false;
         return {content: latestData, fileIndex: file.index + 1};
@@ -245,6 +304,9 @@ const getDataFromFile = async (folder = __options.folder, fileIndex) => {
     let currentFilePath = makeDataFilePath(folder, currentFileIndex);
  
     const file = await getFile(__options, currentFilePath);
+    if(file.status === 'failed') {
+        return file;
+    }
     const fileContent = JSON.parse(Base64.decode(file.content));
 
     return {
@@ -308,6 +370,9 @@ const getSearchIndecesFile = async (fileIndex, folder = __options.folder) => {
     const currentFilePath = makeDataFilePath(folder, currentFileIndex);
 
     const data = await getFile(__options, currentFilePath);
+    if(data.status === 'failed') {
+        return data;
+    }
     __options.control = false; // this is to tell to go back to normal
 
     const content = JSON.parse(Base64.decode(data.content));
@@ -348,6 +413,9 @@ const makeBaseURL = (options, action) => {
 const getFilePaginationCount = async (folder = __options.folder) => {
     const currentModelCounterFile = makeCounterFilePath(folder)
     const data = await getFile(__options, currentModelCounterFile);
+    if(data.status === 'failed') {
+        return data;
+    }
     const fileCounter = JSON.parse(Base64.decode(data.content));
     return {
         fileCounter: fileCounter.index,
@@ -364,7 +432,12 @@ const updateFilePaginationCount = async (folder = __options.folder, currentCount
         sha: currentCounterData.sha
     }
     // currentCounterData.fileCount = updatedFileIndex;
-    await createCommit(__options, dataToSend);
+    const createdCommit = await createCommit(__options, dataToSend);
+    
+    if(createdCommit.status === 'failed') {
+        return createdCommit;
+    }
+    return updatedFileIndex;
 }
 
 const makeDataId = (data) => {
@@ -412,12 +485,14 @@ const getFileIndexWithChildDataId = (dataId) => {
 }
 
 const getDataById = async (dataId, folder = __options.folder) => {
+    
     let fileIndex = getFileIndexWithChildDataId(dataId);
-    //we add 1 to the file index to normalize it to a normal id (integer) structure
     const file = await getDataFromFile(folder, fileIndex);
+    
     const data = file.content;
     const foundData = searchDataById(data, dataId);
     return foundData;
+    
 }
 
 const isDataExist = async (dataId, folder = __options.folder) => {
@@ -467,7 +542,7 @@ const restoreDataInFile = async (dataId, folder = __options.folder) => {
             content: JSON.stringify( { data:updatedData } ),
             sha: file.sha
         });
-    return createdCommit.status === 200; 
+    return createdCommit.status === 200 ? true : createdCommit; 
 }
 
 const restoreDataInSearchIndeces = async (dataId, folder = __options.folder) => {
@@ -512,7 +587,7 @@ const deleteDataFromFile = async (dataId, folder = __options.folder) => {
             content: JSON.stringify( { data:updatedData } ),
             sha: file.sha
         });
-    return createdCommit.status === 200; 
+    return createdCommit.status === 200 ? true : createdCommit; 
 }
 
 const deleteDataFromSearchIndeces = async (dataId, folder = __options.folder) => {

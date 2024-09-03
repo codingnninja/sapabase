@@ -28,35 +28,14 @@ describe('authentication for user to connect with Github in Node', function() {
     })
 
     context('authenticate with non-object arguments', function() {
-        it('should throw a number related error', function() {
-            expect(function(){
-                auth(4)
-            }).to.throw(TypeError, "An object is expected but you supplied Number");
-        })
-
-        it('should throw a string related error', function() {
-            expect(function(){
-                auth('')
-            }).to.throw(TypeError, "An object is expected but you supplied String");
-        })
-
-        it('should throw a boolean related error', function() {
-            expect(function(){
-                auth(true)
-            }).to.throw(TypeError, "An object is expected but you supplied Boolean");
-        })
-
-        it('should throw array related error', function() {
-            expect(function(){
-                auth(['ayoba', 1])
-            }).to.throw(TypeError, "An object is expected but you supplied Array");
-        })
-
-        it('should throw function related error', function() {
-            expect(function(){
-                auth(() => {return 'a'} )
-            }).to.throw(TypeError, "An object is expected but you supplied Function");
-        })
+        const invalidOptions = [-1, 0, 1.5, 'not a number', [], undefined, null];
+        for (const invalidOption of invalidOptions) {
+            it(`should throw an error`, function() {
+                expect(function(){
+                    auth(invalidOption)
+                }).to.throw(TypeError, `An object is expected but you supplied ${Object.prototype.toString.call(invalidOption).slice(8, -1)}`);//Object.prototype... is used to get the type of invalidOpition
+            });
+        }
     })
 
     context('authenticate with startPrivateAuth & endPrivateAuth in node', function() {

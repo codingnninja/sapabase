@@ -1,35 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <script type="module">
-        import { Octokit } from "https://cdn.skypack.dev/@octokit/rest";
-        import {
-            auth, 
-            loadData,
-            // getDataById,
-            // storeDataInHTML,
-            // getDataFromHTML,
-            // deleteDataById,
-            // restoreDataById,
-            // isDataExist,
-            // resetTokenInBrowser
-        } from "https://cdn.skypack.dev/@codingnninja/sapabase";
-/* Public authentication and loading of data */
-        auth({
-            username: 'codingnninja',
-            reponame: 'bloguard',
-            folder: 'user',
-            Octokit,
-        });
-        
-        const myData = await loadData()
-        console.log(myData)
+      import { Octokit } from "https://cdn.jsdelivr.net/npm/@octokit/rest@20.0.1/+esm";
+      import {
+        auth,
+        loadData,
+        // getDataById,
+        // storeDataInHTML,
+        // getDataFromHTML,
+        // deleteDataById,
+        // restoreDataById,
+        // isDataExist,
+        resetTokenInBrowser,
+      } from "../dist/esm/bundle.js";
+      /* Public authentication and loading of data */
+      auth({
+        username: "codingnninja",
+        reponame: "bloguard",
+        folder: "user",
+        Octokit,
+      });
+      const myData = await loadData(1);
+      const myDatab = await loadData(2);
+      const myDataba = await loadData(3);
+      const myDatabac = await loadData(3);
+      console.log(myData);
+      console.log(myDatab);
+      console.log(myDataba);
+      console.log(myDatabac);
     </script>
-</body>
+  </body>
 </html>

@@ -6,7 +6,6 @@
 > Create your own "Serverless Database" with JavaScript and Github for your projects that need simple data.
 
 ## Prerequisites
-
 This project works on all of the latest browsers and servers (e.g Node) and most of their old versions.
 ## Table of contents
 

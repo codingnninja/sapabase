@@ -38,5 +38,15 @@ export default [
       { file: pkg.main, format: 'cjs' },
       { file: pkg.module, format: 'es' },
     ],
+    plugins: [
+      terser(),
+      commonjs(),
+      nodeResolve({
+        browser: true
+      }),
+      babel({
+        exclude: 'node_modules/**',
+      }),
+    ],
   },
 ];
